@@ -1,7 +1,6 @@
 
 afirmacion(si).
 
-
 intensidad(arabica,suave).
 intensidad(robusta,intenso).
 intensidad(combinado,medio).
@@ -35,17 +34,17 @@ suma(N,X,Sum):- Nant is N - 1,
 
 
 
-cantidadIngredientes(TamanoTaza,A,Ax,B,Bx,C,Cx,D,Dx):-suma(TamanoTaza,A,Ax),
-													  suma(TamanoTaza,B,Bx),
-													  suma(TamanoTaza,C,Cx),
-													  suma(TamanoTaza,D,Dx). 
+cantidadIngredientes(TamanoTaza,Cafe,CafeIngre,Agua,AguaIngre,Leche,LecheIngre,Chocolate,ChocolateIngre):-suma(TamanoTaza,Cafe,CafeIngre),
+																										  suma(TamanoTaza,Agua,AguaIngre),
+																										  suma(TamanoTaza,Leche,LecheIngre),
+																										  suma(TamanoTaza,Chocolate,ChocolateIngre). 
 
-prepararCafe(TamanoTaza,TipoPreparacion,TipoCafe,EstacionAno,Salida):-taza(TamanoTaza,X),
-																	  estacion(EstacionAno,Y),
-																	  intensidad(TipoCafe,Z),
-																	  preparacion(TipoPreparacion,A,B,C,D),
-																	  cantidadIngredientes(X,A,Ax,B,Bx,C,Cx,D,Dx),
-																	  atomic_list_concat([Ax,",",Cx,",",Bx,",",Dx,",",Z,",",Y],Salida).
+prepararCafe(TamanoTaza,TipoPreparacion,TipoCafe,EstacionAno,Salida):-taza(TamanoTaza,Tamano),
+																	  estacion(EstacionAno,TiempoPreparacion),
+																	  intensidad(TipoCafe,IntensidadCafe),
+																	  preparacion(TipoPreparacion,Cafe,Agua,Leche,Chocolate),
+																	  cantidadIngredientes(Tamano,Cafe,CafeIngre,Agua,AguaIngre,Leche,LecheIngre,Chocolate,ChocolateIngre),
+																	  atomic_list_concat([CafeIngre,",",LecheIngre,",",AguaIngre,",",ChocolateIngre,",",IntensidadCafe,",",TiempoPreparacion],Salida).
 
 
 numeroTazas(CantidadCafe,CafeIngre,CantidadLeche,LecheIngre,CantidadAgua,AguaIngre,CantidadChoco,ChocoIngre,Numero):-CantidadCafe>=CafeIngre,
@@ -60,26 +59,21 @@ numeroTazas(CantidadCafe,CafeIngre,CantidadLeche,LecheIngre,CantidadAgua,AguaIng
 
 numeroTazas(_,_,_,_,_,_,_,_,0).
 
-cantidadTazas(TamanoTaza,TipoPreparacion,TipoCafe,EstacionAno,CantidadCafe,CantidadLeche,CantidadAgua,CantidadChoco,Salida):-preparacion(TipoPreparacion,A,B,C,D),
-																											   taza(TamanoTaza,X),
-																											   cantidadIngredientes(X,A,Ax,B,Bx,C,Cx,D,Dx),
-																											   numeroTazas(CantidadCafe,Ax,CantidadLeche,Cx,CantidadAgua,Bx,CantidadChoco,Dx,Numero),
-																											   estacion(EstacionAno,Z),
-																											   suma(Numero,Z,Sum),
+cantidadTazas(TamanoTaza,TipoPreparacion,TipoCafe,EstacionAno,CantidadCafe,CantidadLeche,CantidadAgua,CantidadChoco,Salida):-preparacion(TipoPreparacion,Cafe,Agua,Leche,Chocolate),
+																											   taza(TamanoTaza,Tamano),
+																											   cantidadIngredientes(Tamano,Cafe,CafeIngre,Agua,AguaIngre,Leche,LecheIngre,Chocolate,ChocolateIngre),
+																											   numeroTazas(CantidadCafe,CafeIngre,CantidadLeche,LecheIngre,CantidadAgua,AguaIngre,CantidadChoco,ChocolateIngre,Numero),
+																											   estacion(EstacionAno,Tiempo),
+																											   suma(Numero,Tiempo,Sum),
 																											   atomic_list_concat([Numero,",",Sum],Salida).
 
 
 sePuedeUsar(Instalada,CantidadAgua,CantidadCafe,CantidadLeche):- afirmacion(Instalada),CantidadLeche>=30,CantidadCafe>=30,CantidadAgua>=150.
 
-cambiarIntensidad(CantidadLeche,CantidadCafe,Num,Resp):-CantidadLeche>CantidadCafe,Num =\= 1, Nant is Num - 1, razonIntensidad(Resp,Num).
-
-cambiarIntensidad(CantidadLeche,CantidadCafe,Num,Resp):-CantidadLeche>CantidadCafe,razonIntensidad(Resp,Num).
-
 razon(Intensidad,CantidadLeche,CantidadCafe,CantidadChoco,Resp):-razonIntensidad(Intensidad,Num),
 												((CantidadLeche+CantidadChoco>CantidadCafe,Num=\=1,Nant is Num - 1, razonIntensidad(Resp,Nant));
 												((CantidadLeche<CantidadCafe;Num=:=1),razonIntensidad(Resp,Num))).
-											  %cambiarIntensidad(CantidadLeche,CantidadCafe,Num,Resp).
 
-intensidadCafe(TipoCafe,TipoPreparacion,Salida):-intensidad(TipoCafe,X),
-												 preparacion(TipoPreparacion,A,B,C,D),
-												 razon(X,C,A,D,Salida).
+intensidadCafe(TipoCafe,TipoPreparacion,Salida):-intensidad(TipoCafe,IntensidadCafe),
+												 preparacion(TipoPreparacion,Cafe,Agua,Leche,Chocolate),
+												 razon(IntensidadCafe,Leche,Cafe,Chocolate,Salida).
