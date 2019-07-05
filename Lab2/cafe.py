@@ -77,59 +77,39 @@ def definirReglas(tipoCafe):
         rule6 = ctrl.Rule(tamano['grande'] & temperatura['calido'] & intensidad['suave'],(agua['mucha'], cafe['poca'], leche['media'], chocolate['poca'], tiempo['media']))
     return [rule1,rule2,rule3,rule4,rule5,rule6]
 
+
+def realizarCalculo(input_temperatura,input_tamano,input_intensidad,reglas):
+    cafetera_ctrl = ctrl.ControlSystem(reglas)
+    cafetera = ctrl.ControlSystemSimulation(cafetera_ctrl)
+    cafetera.input['temperatura'] = input_temperatura
+    cafetera.input['tamano'] = input_tamano
+    cafetera.input['intensidad'] = input_intensidad
+    cafetera.compute()
+    return cafetera
+
+def graficarResultados(cafetera,tipoCafe):
+    print(cafetera.output['agua'])
+    agua.view(sim=cafetera)
+    cafe.view(sim=cafetera)
+    tiempo.view(sim=cafetera)
+    if tipoCafe != "espresso":
+        leche.view(sim=cafetera)
+        if tipoCafe == "mocaccino":
+            chocolate.view(sim=cafetera)
+    plt.show()
+
 intensidad,temperatura,tamano = definirAntecedentes()
 agua,cafe,leche,tiempo,chocolate = definirConsecuentes()
 reglas = definirReglas("mocaccino")
-#temperatura.automf(3)
-#tamano.automf(3)
-#intensidad.automf(3)
+cafetera = realizarCalculo(18,20,2,reglas)
+graficarResultados(cafetera,"mocaccino")
 
 
 
-temperatura.view()
-
-tamano.view()
-
-intensidad.view()
-
-cafe.view()
-
-plt.show()
-
-
-######################### ESPRESSO ############################
 
 
 
-######################### CAPUCCINO ############################
-'''
 
 
-
-######################### LATTE ############################
-
-
-
-######################### MOKACCINO ############################
-
-
-'''
-
-
-tipping_ctrl = ctrl.ControlSystem(reglas)
-
-tipping = ctrl.ControlSystemSimulation(tipping_ctrl)
-
-tipping.input['temperatura'] = 18
-tipping.input['tamano'] = 20
-tipping.input['intensidad'] = 2
-
-tipping.compute()
-
-print(tipping.output['agua'])
-agua.view(sim=tipping)
-cafe.view(sim=tipping)
-tiempo.view(sim=tipping)
-plt.show()
 
 
